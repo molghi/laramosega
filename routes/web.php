@@ -1,7 +1,13 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// show search form
+Route::get('/', [PageController::class, 'homepage']);
+
+// show bookmarked titles
+Route::get('/bookmarked', [PageController::class, 'bookmarked']);
+
+// show about this app
+Route::get('/about', [PageController::class, 'about']);
