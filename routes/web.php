@@ -11,3 +11,6 @@ Route::get('/bookmarked', [PageController::class, 'bookmarked']);
 
 // show about this app
 Route::get('/about', [PageController::class, 'about']);
+
+
+// Route::get('?search={term}'. [PageController::class, 'run_search'])->name('search');
