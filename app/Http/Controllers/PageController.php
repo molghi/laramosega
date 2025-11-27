@@ -68,4 +68,21 @@ class PageController extends Controller
     }
 
     // =================================================================
+
+    public function details ($type, $id) {
+        // fetch and return
+        if ($type === 'movie') {
+            $response = Http::get("https://api.themoviedb.org/3/movie/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
+        } else {
+            $response = Http::get("https://api.themoviedb.org/3/tv/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
+        }
+        $data = $response->json();
+        $final_data = [
+            'data' => $data, 
+            'type' => $type
+        ];
+        return view('result', $final_data);
+    }
+
+    // =================================================================
 }

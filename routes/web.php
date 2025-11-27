@@ -3,14 +3,14 @@
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-// show search form
-Route::get('/', [PageController::class, 'homepage']);
-
 // show bookmarked titles
 Route::get('/bookmarked', [PageController::class, 'bookmarked']);
 
 // show about this app
 Route::get('/about', [PageController::class, 'about']);
 
+// show movie/series details
+Route::get('/title/{type}/{id}', [PageController::class, 'details']);
 
-// Route::get('?search={term}'. [PageController::class, 'run_search'])->name('search');
+// show search form
+Route::get('/', [PageController::class, 'homepage']);

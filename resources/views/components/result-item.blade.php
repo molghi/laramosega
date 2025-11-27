@@ -4,7 +4,7 @@
 
     {{-- image --}}
     <div>
-        <a href="/title/{{ $resultData['id'] }}" class="transition duration-300 hover:opacity-70" title="{{ $resultData['overview'] }}">
+        <a href="/title/{{ $type === 'movie' ? 'movie' : 'series' }}/{{ $resultData['id'] }}" class="transition duration-300 hover:opacity-70" title="{{ $resultData['overview'] }}">
             <img src="{{ $tmdb_base_path . $resultData['poster_path'] }}" alt="Poster image">
         </a>
     </div>
@@ -16,7 +16,7 @@
 
     {{-- name, year --}}
     <div>
-        <a class="font-bold hover:underline" href="/title/{{ $resultData['id'] }}">
+        <a class="font-bold hover:underline" href="/title/{{ $type === 'movie' ? 'movie' : 'series' }}/{{ $resultData['id'] }}">
             @if ($type === 'movie')
                 {{ $resultData['title'] }} 
             @else
