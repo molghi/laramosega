@@ -3,7 +3,7 @@
     <div class="{{ config('tailwind.container') }} flex items-center justify-between">
 
         <!-- Logo -->
-        <div class="text-xl font-bold"> {{ $sitename }}: MOvies & SEries </div>
+        <div class="text-xl font-bold"> {{ $sitename }}</div>
 
         <!-- Navigation Links -->
         <nav class="flex items-center gap-8">

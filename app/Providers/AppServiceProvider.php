@@ -24,8 +24,8 @@ class AppServiceProvider extends ServiceProvider
         
         View::share('navlinks', [
             'Search' => '/',
-            'Bookmarked' => 'bookmarked',
-            'About' => 'about',
+            'Bookmarks' => '/bookmarked',
+            'About' => '/about',
         ]);
 
         View::share('tmdb_base_path', 'https://image.tmdb.org/t/p/w500');

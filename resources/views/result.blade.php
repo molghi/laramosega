@@ -13,5 +13,5 @@
 @section('title', $title)
 
 @section('content')
-    <x-result-in-details :type="$type" :resultData="$data" />
+    <x-result-in-details :type="$type" :resultData="$data" :details="$details" :seasons="$seasons" />
 @endsection

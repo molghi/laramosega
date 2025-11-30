@@ -11,7 +11,7 @@ class ResultInDetails extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public string $type, public array $resultData)
+    public function __construct(public string $type, public array $resultData, public array $details, public array|string $seasons)
     {
         //
     }

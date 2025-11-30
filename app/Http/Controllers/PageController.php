@@ -33,7 +33,7 @@ class PageController extends Controller
             // fetch series
             $response = Http::get($series_search, [
                 'api_key' => env('TMDB_API_KEY'), 
-                'query' => $search_term
+                'query' => $search_term,
             ]);
             // return series json
             $data_series = $response->json();
@@ -72,16 +72,46 @@ class PageController extends Controller
     public function details ($type, $id) {
         // fetch and return
         if ($type === 'movie') {
+            // FETCHING A MOVIE
             $response = Http::get("https://api.themoviedb.org/3/movie/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
+            // fetch details
+            $id = $response['id'];
+            $details = Http::get("https://api.themoviedb.org/3/movie/{$id}", [
+                'api_key' => env('TMDB_API_KEY'),
+                'append_to_response' => 'credits,images,videos'
+            ])->json();
         } else {
+            // FETCHING A SERIES
             $response = Http::get("https://api.themoviedb.org/3/tv/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
+            // fetch details
+            $id = $response['id'];
+            $details = Http::get("https://api.themoviedb.org/3/tv/{$id}", [
+                'api_key' => env('TMDB_API_KEY'),
+                'append_to_response' => 'credits,images,videos'
+            ])->json();
+            $seasonsData = [];
+            for ($i = 0; $i < $response['number_of_seasons']; $i++) {
+                $num = $i+1;
+                $seasonInfo = Http::get("https://api.themoviedb.org/3/tv/$id/season/$num", [ 'api_key' => env('TMDB_API_KEY') ]);
+                array_push($seasonsData, $seasonInfo->json());
+            }
         }
+
         $data = $response->json();
         $final_data = [
             'data' => $data, 
-            'type' => $type
+            'type' => $type,
+            'details' => $details,
+            'seasons' => !empty($seasonsData) ? $seasonsData : ''
         ];
         return view('result', $final_data);
+    }
+
+    // =================================================================
+
+    public function add_bookmark (Request $request) {
+        $title_id = $request['title_id'];
+        dd($title_id);
     }
 
     // =================================================================

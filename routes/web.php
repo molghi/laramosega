@@ -14,3 +14,6 @@ Route::get('/title/{type}/{id}', [PageController::class, 'details']);
 
 // show search form
 Route::get('/', [PageController::class, 'homepage']);
+
+// add bookmark
+Route::post('/bookmarked', [PageController::class, 'add_bookmark'])->name('bookmark.add');

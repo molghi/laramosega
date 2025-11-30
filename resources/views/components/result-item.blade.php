@@ -5,7 +5,7 @@
     {{-- image --}}
     <div>
         <a href="/title/{{ $type === 'movie' ? 'movie' : 'series' }}/{{ $resultData['id'] }}" class="transition duration-300 hover:opacity-70" title="{{ $resultData['overview'] }}">
-            <img src="{{ $tmdb_base_path . $resultData['poster_path'] }}" alt="Poster image">
+            <img src="{{ $tmdb_base_path . $resultData['poster_path'] }}" alt="Poster image" class="w-full h-[250px] bg-[#202020]">
         </a>
     </div>
 
