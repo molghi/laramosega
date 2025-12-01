@@ -2,10 +2,11 @@
 // dd($resultData);
 // dd($details)
 // dd($seasons)
+// dd($bookmarkIds) 
+$is_bookmarked = in_array($resultData['id'], $bookmarkIds);
 @endphp
 
 <div class="{{ config('tailwind.container') }} mt-16">
-
     <div class="grid grid-cols-[30%_70%] gap-6">
         {{-- col 1 --}}
         <div class="flex flex-col gap-6">
@@ -23,10 +24,14 @@
         {{-- col 2 --}}
         <div class="column-2 bg-gray-900 p-4 rounded flex flex-col gap-3 relative">
             {{-- add to/remove from favorites --}}
-            <form action="{{ route('bookmark.add') }}" method="POST">
+            <form action="{{ $is_bookmarked ? route('bookmark.remove') : route('bookmark.add') }}" method="POST">
                 @csrf
+                @if ($is_bookmarked)
+                    @method('DELETE')
+                @endif
                 <input type="hidden" name="title_id" value="{{$resultData['id']}}">
-                <button type="submit" class="absolute top-[-45px] right-0 text-sm rounded-xl bg-blue-700 px-3 py-1 transition duration-200 hover:opacity-100 opacity-50 active:opacity-50">Add to Bookmarks</button>
+                <input type="hidden" name="type" value="{{$type}}">
+                <button type="submit" class="absolute top-[-45px] right-0 text-sm text-white rounded-xl px-3 py-1 transition duration-200 hover:opacity-100 opacity-50 active:opacity-50 {{ $is_bookmarked ? 'bg-red-400' : 'bg-blue-700' }}">{{ $is_bookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks' }}</button>
             </form>
 
             {{-- backdrop --}}
@@ -61,8 +66,8 @@
                         @endif
                     @else
                         @if (!empty($resultData['release_date']))
-                        <div title="Released: {{ $resultData['release_date'] }}">
-                            <span class="font-bold opacity-50">Release Date: </span> {{ substr($resultData['release_date'], 0, 4) }}
+                        <div title="Release Date: {{ $resultData['release_date'] }}">
+                            <span class="font-bold opacity-50">Release Year: </span> {{ substr($resultData['release_date'], 0, 4) }}
                             @if ((int) date('Y') - (int) substr($resultData['release_date'], 0, 4) > -1)
                             <span class="opacity-50 italic">(Years ago: {{ (int) date('Y') - (int) substr($resultData['release_date'], 0, 4) }})</span>
                             @endif
@@ -120,7 +125,7 @@
                 @endif
 
                 {{-- runtime --}}
-                @if ($type === 'movie')
+                @if ($type === 'movie' && $resultData['runtime'])
                 <div>
                     <span class="font-bold opacity-50">Runtime: </span> 
                     @php
@@ -198,7 +203,7 @@
                         @php    
                         $cast = [];
                         foreach ($details['credits']['cast'] as $key => $person) {
-                            if ($key < 10) {
+                            if ($key < 15) {
                                 $classes = 'personality';
                                 $photo = $tmdb_base_path . $person['profile_path'];
                                 $id = $person['id'];

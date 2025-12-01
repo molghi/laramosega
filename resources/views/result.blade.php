@@ -1,5 +1,4 @@
 @php    
-    // dd($data);
     if ($type === 'movie') {
         $title = $data['title'] . ' (' . substr($data['release_date'], 0, 4) . ')';
     } else {
@@ -13,5 +12,6 @@
 @section('title', $title)
 
 @section('content')
-    <x-result-in-details :type="$type" :resultData="$data" :details="$details" :seasons="$seasons" />
+    @include('partials.flash_msg')
+    <x-result-in-details :type="$type" :resultData="$data" :details="$details" :seasons="$seasons" :bookmarkIds="$bookmark_ids" />
 @endsection

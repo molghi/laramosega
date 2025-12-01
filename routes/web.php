@@ -17,3 +17,9 @@ Route::get('/', [PageController::class, 'homepage']);
 
 // add bookmark
 Route::post('/bookmarked', [PageController::class, 'add_bookmark'])->name('bookmark.add');
+
+// remove bookmark
+Route::delete('/bookmarked', [PageController::class, 'remove_bookmark'])->name('bookmark.remove');
+
+// show person's info (actor/actress/director)
+Route::get('/personality/{id}', [PageController::class, 'personality']);

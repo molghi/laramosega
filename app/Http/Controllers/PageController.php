@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bookmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -52,7 +53,24 @@ class PageController extends Controller
     // =================================================================
 
     public function bookmarked () {
-        return view('bookmarked');
+        // fetch from db
+        $db_bookmarks = Bookmark::latest()->select('title_id', 'type')->get()->toArray();
+        
+        // fetch data from api
+        $entries = [];
+        foreach($db_bookmarks as $id) {
+            $endpoint = $id['type'] === 'movie' ? 'https://api.themoviedb.org/3/movie/' : 'https://api.themoviedb.org/3/tv/';
+            $title_id = $id['title_id'];
+            $response = Http::get("$endpoint$title_id", ['api_key' => env('TMDB_API_KEY')]);
+            $response = $response->json();
+            $response['entry_type'] = $id['type'];
+            array_push($entries, $response);
+        }
+
+        $data = [
+            'bookmarked_titles' => $entries
+        ];
+        return view('bookmarked', $data);
     }
 
     // =================================================================
@@ -102,7 +120,8 @@ class PageController extends Controller
             'data' => $data, 
             'type' => $type,
             'details' => $details,
-            'seasons' => !empty($seasonsData) ? $seasonsData : ''
+            'seasons' => !empty($seasonsData) ? $seasonsData : '',
+            'bookmark_ids' => Bookmark::latest()->pluck('title_id')->toArray()
         ];
         return view('result', $final_data);
     }
@@ -111,7 +130,31 @@ class PageController extends Controller
 
     public function add_bookmark (Request $request) {
         $title_id = $request['title_id'];
-        dd($title_id);
+        $type = $request['type'];
+        Bookmark::create(['title_id' => $title_id, 'type' => $type]);
+        return back()->with('message', 'Bookmark added!');
+    }
+
+    // =================================================================
+
+    public function remove_bookmark (Request $request) {
+        $title_id = $request['title_id'];
+        Bookmark::where('title_id', $title_id)->delete();
+        return back()->with('message', 'Bookmark removed!');
+    }
+
+    // =================================================================
+
+    public function personality ($id) {
+        // dd($id);
+        $response_bio = Http::get("https://api.themoviedb.org/3/person/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
+        $response_titles = Http::get("https://api.themoviedb.org/3/person/$id/combined_credits", [ 'api_key' => env('TMDB_API_KEY') ]);
+        $data = [
+            'bio' => $response_bio->json(),
+            'titles' => $response_titles->json(),
+        ];
+        // dd($response_bio->json());
+        return view('personality', $data);
     }
 
     // =================================================================
