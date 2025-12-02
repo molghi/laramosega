@@ -15,8 +15,20 @@ class PageController extends Controller
         $has_query_string = count($request->query());
 
         if (!$has_query_string) {
-            // just show the search form
-            return view('home');
+            // just show the search form -- with popular now
+            $data = [
+                'popular_now_movies' => Http::get('https://api.themoviedb.org/3/movie/popular', [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'language' => 'en-US',
+                    'page' => '1',
+                ])->json(),
+                'popular_now_series' => Http::get('https://api.themoviedb.org/3/tv/popular', [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'language' => 'en-US',
+                    'page' => '1',
+                ])->json()
+            ];
+            return view('home', $data);
         } else {
             // show search form & search results
             $search_term = $request->query()['search']; // get form data
@@ -145,8 +157,7 @@ class PageController extends Controller
 
     // =================================================================
 
-    public function personality ($id) {
-        // dd($id);
+    public function show_personality ($id) {
         $response_bio = Http::get("https://api.themoviedb.org/3/person/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
         $response_titles = Http::get("https://api.themoviedb.org/3/person/$id/combined_credits", [ 'api_key' => env('TMDB_API_KEY') ]);
         $data = [
@@ -155,6 +166,17 @@ class PageController extends Controller
         ];
         // dd($response_bio->json());
         return view('personality', $data);
+    }
+
+    // =================================================================
+
+    public function show_collection ($id) {
+        $response = Http::get("https://api.themoviedb.org/3/collection/$id", [ 'api_key' => env('TMDB_API_KEY') ]);
+        $response = $response->json();
+        $data = [
+            'collection' => $response
+        ];
+        return view('collection', $data);
     }
 
     // =================================================================

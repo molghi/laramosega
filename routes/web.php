@@ -22,4 +22,7 @@ Route::post('/bookmarked', [PageController::class, 'add_bookmark'])->name('bookm
 Route::delete('/bookmarked', [PageController::class, 'remove_bookmark'])->name('bookmark.remove');
 
 // show person's info (actor/actress/director)
-Route::get('/personality/{id}', [PageController::class, 'personality']);
+Route::get('/personality/{id}', [PageController::class, 'show_personality']);
+
+// show collection
+Route::get('/collection/{id}', [PageController::class, 'show_collection']);

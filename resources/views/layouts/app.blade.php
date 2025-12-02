@@ -12,6 +12,9 @@
 
     {{-- INCLUDE SOME CUSTOM STYLES --}}
     @include('partials.styles')
+
+    <!-- glightbox: img/vid gallery -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
 </head>
 <body style="background-color: var(--bg);" class="flex flex-col h-[100vh] text-[var(--accent)] font-mono">
 
@@ -28,5 +31,7 @@
 
     {{-- JS: show now time --}}
     {{-- @include('partials.js_show_now_time') --}}
+
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
 </body>
 </html>

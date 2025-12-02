@@ -289,7 +289,9 @@ $is_bookmarked = in_array($resultData['id'], $bookmarkIds);
             @foreach ($details['images']['backdrops'] as $index => $item)
                 @if ($index < 20)
                     <div>
-                        <img class="transition duration-700 hover:scale-125" src="{{ $tmdb_base_path . $item['file_path'] }}" alt="Gallery Image" />
+                        <a href="{{ $tmdb_base_path . $item['file_path'] }}" class="glightbox" data-gallery="gallery">
+                            <img class="transition duration-700 hover:scale-125" src="{{ $tmdb_base_path . $item['file_path'] }}" alt="Gallery Image" />
+                        </a>
                     </div>
                 @endif
             @endforeach
@@ -302,7 +304,7 @@ $is_bookmarked = in_array($resultData['id'], $bookmarkIds);
             @foreach ($details['videos']['results'] as $index => $item)
                 @if ($index < 8)
                     <div class="border border-[gold] p-4 rounded-md text-sm text-center flex flex-col gap-2 items-center justify-center">
-                        <a class="underline hover:no-underline" href="https://youtu.be/{{ $item['key'] }}" target="_blank">
+                        <a class="underline hover:no-underline glightbox" data-type="video" data-gallery="gallery" href="https://youtu.be/{{ $item['key'] }}" target="_blank">
                             {{ $item['name'] }} 
                         </a>
                         <span class="opacity-50 hover:opacity-100">({{ $item['site'] }}, {{ $item['type'] }})</span>
@@ -440,4 +442,26 @@ $is_bookmarked = in_array($resultData['id'], $bookmarkIds);
             }
         });
     }
+</script>
+
+{{-- <script>
+  const lightbox = GLightbox({
+    selector: '.glightbox',
+    loop: true,
+    touchNavigation: true
+  });
+</script> --}}
+
+<script>
+  document.querySelectorAll('.glightbox').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.preventDefault(); // prevent page scroll
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    GLightbox({ selector: '.glightbox', loop: true });
+  });
 </script>

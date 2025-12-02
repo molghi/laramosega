@@ -7,9 +7,23 @@
 
         <!-- Navigation Links -->
         <nav class="flex items-center gap-8">
-            @foreach ($navlinks as $link_key => $link_value)
+            {{-- @foreach ($navlinks as $link_key => $link_value)
                 <a href="{{ $link_value }}" 
                     class="{{ request()->path() === $link_value ? 'font-bold text-yellow-500' : '' }} hover:underline">
+                    {{ $link_key }}
+                </a>
+            @endforeach --}}
+            @foreach ($navlinks as $link_key => $link_value)
+                @php
+                    $current_path = trim(request()->path(), '/');    // slash sliced out
+                    $link_path = trim($link_value, '/');             // slash sliced out
+                    $active = $link_path === ''
+                        ? ($current_path === '')
+                        : ($current_path === $link_path || str_starts_with($current_path, $link_path.'/'));
+                @endphp
+
+                <a href="{{ $link_value }}"
+                class="{{ $active ? 'font-bold text-yellow-500' : '' }} hover:underline">
                     {{ $link_key }}
                 </a>
             @endforeach

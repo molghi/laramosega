@@ -29,16 +29,15 @@ if ($is_director) {
 
 <div class="{{ config('tailwind.container') }} mt-16">
     {{-- 2 cols --}}
-    <div class="grid grid-cols-[30%_70%] items-start gap-9 mb-[70px]">
+    {{-- <div class="grid grid-cols-[30%_70%] items-start gap-9 "> --}}
+    <div class="w-full mb-[70px]">
         <!-- Left column: profile img -->
-        <div 
-            class="bg-gray-800 p-4 rounded overflow-hidden"
-        >
+        <div class="bg-gray-800 p-4 rounded overflow-hidden w-[260px] float-left mr-9 mb-4">
             <img src="{{ $tmdb_base_path . $bio['profile_path'] }}" alt="Profile Image" class="w-full h-full object-fit mb-4 hover:scale-125 transition poster">
         </div>
 
         <!-- Right column: details -->
-        <div class="flex flex-col space-y-2">
+        <div class="space-y-2">
             {{-- name --}}
             <h1 class="text-2xl font-bold mb-5">{{ $bio['name'] }}</h1>
 
@@ -82,6 +81,8 @@ if ($is_director) {
                 <span class="mt-1 text-justify text-sm">{!! nl2br(e($bio['biography'])) !!}</span>
             </div>
         </div>
+
+        <div class="clear-both"></div>
     </div>
 
     {{-- 1 col --}}

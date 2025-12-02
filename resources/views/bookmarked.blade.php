@@ -1,7 +1,3 @@
-@php
-    // dd($bookmarked_titles);
-@endphp
-
 @extends('layouts.app')
 
 @section('title', 'Bookmarked Titles')
