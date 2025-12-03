@@ -16,7 +16,7 @@ if ($is_director) {
     $titles_starred_in = [];
     foreach ($titles['cast'] as $title) {
         // if ($title['job'] === 'Actor' || $title['job'] === 'Actress') 
-        if (!in_array(10767, $title['genre_ids'])) array_push($titles_starred_in, $title);
+        if (!empty($title['genre_ids']) && !in_array(10767, $title['genre_ids'])) array_push($titles_starred_in, $title);
     }
     usort($titles_starred_in, function ($a, $b) {
         $key_name1 = $a['media_type'] === 'movie' ? 'release_date' : 'first_air_date';

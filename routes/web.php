@@ -26,3 +26,9 @@ Route::get('/personality/{id}', [PageController::class, 'show_personality']);
 
 // show collection
 Route::get('/collection/{id}', [PageController::class, 'show_collection']);
+
+// show movies by genre
+Route::get('/genre/movie/{id}', [PageController::class, 'show_movie_by_genre']);
+
+// show series by genre
+Route::get('/genre/series/{id}', [PageController::class, 'show_series_by_genre']);

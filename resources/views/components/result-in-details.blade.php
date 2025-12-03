@@ -1,9 +1,6 @@
 @php
-// dd($resultData);
-// dd($details)
-// dd($seasons)
-// dd($bookmarkIds) 
-$is_bookmarked = in_array($resultData['id'], $bookmarkIds);
+    $is_bookmarked = in_array($resultData['id'], $bookmarkIds);
+    // dd($type);
 @endphp
 
 <div class="{{ config('tailwind.container') }} mt-16">
@@ -97,11 +94,18 @@ $is_bookmarked = in_array($resultData['id'], $bookmarkIds);
                         <span class="font-bold opacity-50">Genres: </span> 
                         @php
                             $genres = [];
+                            $genres_codes = [];
                             foreach ($resultData['genres'] as $genre) {
                                 array_push($genres, $genre['name']);
+                                array_push($genres_codes, $genre['id']);
+                            }
+                            $markup = [];
+                            foreach ($genres as $index => $genre) {
+                                $code = $genres_codes[$index];
+                                array_push($markup, "<a href='/genre/$type/$code' class='border-b-2 border-dotted hover:border-[transparent]'>$genre</a>");
                             }
                         @endphp
-                        {{ implode(', ', $genres) }}
+                        {!! implode(', ', $markup) !!}
                     </div>
                 @endif
 

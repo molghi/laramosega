@@ -14,17 +14,87 @@
 
             {{-- show movies popular now --}}
             <h2 class="col-span-full text-xl font-bold">Movies Popular Now:</h2>
-            @foreach ($popular_now_movies['results'] as $movRez)
-                <x-result-item type="movie" :resultData="$movRez" />
-            @endforeach
+            <div class="col-span-full">
+                <div id="slider1" class="splide">
+                    <div class="splide__track">
+                        <ul class="splide__list">
+                            @foreach ($popular_now_movies['results'] as $movRez)
+                                <div class="splide__slide">
+                                    <x-result-item type="movie" :resultData="$movRez" />
+                                </div>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-            <hr class="col-span-full mt-14 mb-10" >
+            <hr class="col-span-full my-10" >
 
             {{-- show series popular now --}}
             <h2 class="col-span-full text-xl font-bold">Series Popular Now:</h2>
-            @foreach ($popular_now_series['results'] as $serRez)
-                <x-result-item type="series" :resultData="$serRez" />
-            @endforeach
+            <div class="col-span-full">
+                <div id="slider2" class="splide">
+                    <div class="splide__track">
+                        <ul class="splide__list">
+                            @foreach ($popular_now_series['results'] as $serRez)
+                                <div class="splide__slide">
+                                    <x-result-item type="series" :resultData="$serRez" />
+                                </div>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <style>
+        .splide__pagination {
+            position: relative;
+            bottom: -25px;   /* move slider dots lower */
+            margin-top: 12px;
+        }
+    </style>
+
+    {{-- frontend slider functionality --}}
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js"></script>
+    <script>
+    document.addEventListener( 'DOMContentLoaded', function () {
+        // first slider
+        new Splide( '#slider1', {
+        type      : 'loop',
+        perPage   : 4,          // desktop default
+        perMove   : 1,
+        gap       : '1rem',
+        autoplay  : true,
+        pauseOnHover: true,
+        interval  : 3000,
+        arrows: false,
+        breakpoints: {
+            1280: { perPage: 4 },
+            1024: { perPage: 3 },
+            768:  { perPage: 2 },
+            480:  { perPage: 1 }
+        }
+        } ).mount();
+
+        // second slider
+        new Splide( '#slider2', {
+        type      : 'loop',
+        perPage   : 4,          // desktop default
+        perMove   : 1,
+        gap       : '1rem',
+        autoplay  : true,
+        pauseOnHover: true,
+        interval  : 3000,
+        arrows: false,
+        breakpoints: {
+            1280: { perPage: 4 },
+            1024: { perPage: 3 },
+            768:  { perPage: 2 },
+            480:  { perPage: 1 }
+        }
+        } ).mount();
+    } );
+    </script>
 @endsection

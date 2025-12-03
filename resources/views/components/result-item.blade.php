@@ -59,7 +59,7 @@
                 $genres = [];
                 if (!empty($resultData['genre_ids'])) {
                     foreach ($resultData['genre_ids'] as $genre_code) {
-                        array_push($genres, $genre_interpreter[$genre_code]);
+                        array_push($genres, config('app.genre_interpreter')[$genre_code]);
                     }
                 }
                 if (!empty($resultData['genres'])) {

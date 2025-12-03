@@ -6,6 +6,9 @@ use App\Models\Bookmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
 class PageController extends Controller
 {
     // =================================================================
@@ -20,46 +23,63 @@ class PageController extends Controller
                 'popular_now_movies' => Http::get('https://api.themoviedb.org/3/movie/popular', [
                     'api_key' => env('TMDB_API_KEY'),
                     'language' => 'en-US',
-                    'page' => '1',
                 ])->json(),
+
                 'popular_now_series' => Http::get('https://api.themoviedb.org/3/tv/popular', [
                     'api_key' => env('TMDB_API_KEY'),
                     'language' => 'en-US',
-                    'page' => '1',
                 ])->json()
             ];
             return view('home', $data);
         } else {
             // show search form & search results
+            return $this->fetch_search_results($request);
+        }
+    }
+
+    // =================================================================
+
+    public function fetch_search_results ($request) {
+        // show search form & search results
             $search_term = $request->query()['search']; // get form data
             $movie_search = 'https://api.themoviedb.org/3/search/movie'; // movies endpoint
             $series_search = 'https://api.themoviedb.org/3/search/tv'; // series endpoint
 
             // fetch movies
-            $response = Http::get($movie_search, [
-                'api_key' => env('TMDB_API_KEY'), 
-                'query' => $search_term
-            ]);
-            // return movies json
-            $data_movies = $response->json();
-
-            // fetch series
-            $response = Http::get($series_search, [
+            $response_movies = Http::get($movie_search, [
                 'api_key' => env('TMDB_API_KEY'), 
                 'query' => $search_term,
-            ]);
-            // return series json
-            $data_series = $response->json();
+                'page' => request()->get('page', 1)
+            ])->json();
+
+            // fetch series
+            $response_series = Http::get($series_search, [
+                'api_key' => env('TMDB_API_KEY'), 
+                'query' => $search_term,
+                'page' => request()->get('page', 1)
+            ])->json();
+
+            // laravel pagination on externally fetched data
+            // $perPage = 20;
+            // $page = request()->get('page', 1); // current page, 1 by def
+
+            // $paginator = new LengthAwarePaginator(
+            //     $response['results'], // slice
+            //     $response['total_results'], // total
+            //     $perPage,
+            //     $page,
+            //     ['path' => Paginator::resolveCurrentPath()]
+            // );
 
             $data = [
-                'movie_results' => $data_movies,
-                'series_results' => $data_series,
+                'movie_results' => $response_movies,
+                'series_results' => $response_series,
+                // 'results' => $paginator,
                 'search_term' => $search_term,
                 'title' => 'Search Results'
             ];
 
             return view('results', $data);
-        }
     }
 
     // =================================================================
@@ -177,6 +197,68 @@ class PageController extends Controller
             'collection' => $response
         ];
         return view('collection', $data);
+    }
+
+    // =================================================================
+
+    public function show_movie_by_genre ($id) {
+        $response = Http::get('https://api.themoviedb.org/3/discover/movie', [
+            'api_key' => env('TMDB_API_KEY'),
+            'with_genres' => $id,
+            'page' => request()->get('page', 1)
+        ])->json();
+
+        // laravel pagination on externally fetched data
+        $perPage = 20;
+        $page = request()->get('page', 1); // current page, 1 by def
+
+        $paginator = new LengthAwarePaginator(
+            $response['results'], // slice
+            $response['total_results'], // total
+            $perPage,
+            $page,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
+        $data = [
+            'data' => $response,
+            'results' => $paginator,
+            'type' => 'movie',
+            'genre' => config('app.genre_interpreter')[$id]
+        ];
+
+        return view('genre', $data);
+    }
+
+    // =================================================================
+
+    public function show_series_by_genre ($id) {
+        $response = Http::get('https://api.themoviedb.org/3/discover/tv', [
+            'api_key' => env('TMDB_API_KEY'),
+            'with_genres' => $id,
+            'page' => request()->get('page', 1)
+        ])->json();
+
+        // laravel pagination on externally fetched data
+        $perPage = 20;
+        $page = request()->get('page', 1); // current page, 1 by def
+
+        $paginator = new LengthAwarePaginator(
+            $response['results'], // slice
+            $response['total_results'], // total
+            $perPage,
+            $page,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
+        $data = [
+            'data' => $response,
+            'results' => $paginator,
+            'type' => 'series',
+            'genre' => config('app.genre_interpreter')[$id]
+        ];
+
+        return view('genre', $data);
     }
 
     // =================================================================

@@ -15,6 +15,8 @@
 
     <!-- glightbox: img/vid gallery -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+    {{-- slider --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/css/splide.min.css">
 </head>
 <body style="background-color: var(--bg);" class="flex flex-col h-[100vh] text-[var(--accent)] font-mono">
 
