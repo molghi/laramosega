@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
             'Search' => '/',
             'Bookmarks' => '/bookmarked',
             'About' => '/about',
+            'Logout' => '/logout'
         ]);
 
         View::share('tmdb_base_path', 'https://image.tmdb.org/t/p/w500');

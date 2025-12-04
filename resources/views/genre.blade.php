@@ -1,8 +1,5 @@
 @php    
     $item_type = $type === 'movie' ? 'Movies' : 'Series';
-    // dd($data);
-    // dd($type);
-    // dd($genre);
 @endphp
 
 @extends('layouts.app')

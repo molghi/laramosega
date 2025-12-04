@@ -5,6 +5,13 @@
     @endphp
 @endif
 
+@if (session('success'))
+    <div class="msg fixed top-[10px] left-[50%] transform -translate-x-1/2 bg-black text-[limegreen] border border-[limegreen] text-lg transition duration-300 rounded-xl py-1 px-3 opacity-0 -translate-y-[100px]">{{ session('success') }}</div>
+    @php
+        session()->forget('success'); // reset after showing once
+    @endphp
+@endif
+
 <script>
     // show success msg nicely and then hide
     const successMsg = document.querySelector('.msg');

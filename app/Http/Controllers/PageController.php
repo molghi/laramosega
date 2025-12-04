@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bookmark;
+use App\Models\User;
+use App\Models\Visited;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
@@ -19,6 +22,37 @@ class PageController extends Controller
 
         if (!$has_query_string) {
             // just show the search form -- with popular now
+            $visited_from_db = Visited::where('user_id', Auth::id())->latest()->get()->toArray();
+            $visited = [];
+            $visited_types = [];
+            $visited_ids = [];
+            foreach ($visited_from_db as $ind => $item) {
+                // dd($item['title_id']);
+                if ($ind < 15) {
+                    if ($item['type'] === 'movie' && !in_array($item['title_id'], $visited_ids)) {
+                        $id = $item['title_id'];
+                        $data = Http::get("https://api.themoviedb.org/3/movie/$id", [ 'api_key' => env('TMDB_API_KEY') ])->json();
+                        array_push($visited, $data);
+                        array_push($visited_ids, $data['id']);
+                        array_push($visited_types, $item['type']);
+                    }
+                    else if ($item['type'] === 'series' && !in_array($item['title_id'], $visited_ids)) {
+                        $id = $item['title_id'];
+                        $data = Http::get("https://api.themoviedb.org/3/tv/$id", [ 'api_key' => env('TMDB_API_KEY') ])->json();
+                        array_push($visited, $data);
+                        array_push($visited_ids, $data['id']);
+                        array_push($visited_types, $item['type']);
+                    }
+                    else if (!in_array($item['title_id'], $visited_ids)) {
+                        $id = $item['title_id'];
+                        $data = Http::get("https://api.themoviedb.org/3/person/$id", [ 'api_key' => env('TMDB_API_KEY') ])->json();
+                        array_push($visited, $data);
+                        array_push($visited_ids, $data['id']);
+                        array_push($visited_types, $item['type']);
+                    }
+                }
+            }
+
             $data = [
                 'popular_now_movies' => Http::get('https://api.themoviedb.org/3/movie/popular', [
                     'api_key' => env('TMDB_API_KEY'),
@@ -28,7 +62,10 @@ class PageController extends Controller
                 'popular_now_series' => Http::get('https://api.themoviedb.org/3/tv/popular', [
                     'api_key' => env('TMDB_API_KEY'),
                     'language' => 'en-US',
-                ])->json()
+                ])->json(),
+
+                'visited_pages' => $visited,
+                'visited_types' => $visited_types
             ];
             return view('home', $data);
         } else {
@@ -86,7 +123,7 @@ class PageController extends Controller
 
     public function bookmarked () {
         // fetch from db
-        $db_bookmarks = Bookmark::latest()->select('title_id', 'type')->get()->toArray();
+        $db_bookmarks = Bookmark::where('user_id', Auth::id())->latest()->select('title_id', 'type')->get()->toArray();
         
         // fetch data from api
         $entries = [];
@@ -153,8 +190,15 @@ class PageController extends Controller
             'type' => $type,
             'details' => $details,
             'seasons' => !empty($seasonsData) ? $seasonsData : '',
-            'bookmark_ids' => Bookmark::latest()->pluck('title_id')->toArray()
+            'bookmark_ids' => Bookmark::where('user_id', Auth::id())->latest()->pluck('title_id')->toArray()
         ];
+        
+        Visited::create([
+            "title_id" => $details['id'],
+            "type" => $type,
+            "user_id" => Auth::id(),
+        ]); 
+
         return view('result', $final_data);
     }
 
@@ -163,7 +207,11 @@ class PageController extends Controller
     public function add_bookmark (Request $request) {
         $title_id = $request['title_id'];
         $type = $request['type'];
-        Bookmark::create(['title_id' => $title_id, 'type' => $type]);
+        Bookmark::create([
+            'title_id' => $title_id, 
+            'type' => $type, 
+            'user_id' => Auth::id()
+        ]);
         return back()->with('message', 'Bookmark added!');
     }
 
@@ -171,7 +219,7 @@ class PageController extends Controller
 
     public function remove_bookmark (Request $request) {
         $title_id = $request['title_id'];
-        Bookmark::where('title_id', $title_id)->delete();
+        Bookmark::where('title_id', $title_id)->where('user_id', Auth::id())->delete();
         return back()->with('message', 'Bookmark removed!');
     }
 
@@ -184,7 +232,13 @@ class PageController extends Controller
             'bio' => $response_bio->json(),
             'titles' => $response_titles->json(),
         ];
-        // dd($response_bio->json());
+
+        Visited::create([
+            "title_id" => $data['bio']['id'],
+            "type" => 'personality',
+            "user_id" => Auth::id(),
+        ]); 
+
         return view('personality', $data);
     }
 
@@ -259,6 +313,68 @@ class PageController extends Controller
         ];
 
         return view('genre', $data);
+    }
+
+    // =================================================================
+
+    public function show_auth () {
+        return view('auth');
+    }
+
+    // =================================================================
+
+    public function signup (Request $request) {
+        // get form data 
+        $data = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|confirmed|min:4|max:32',
+        ]);
+
+        // hash pw
+        $data['password'] = bcrypt($data['password']);
+
+        // create user
+        $user = User::create($data);
+
+        // and login
+        Auth::login($user);
+
+        return redirect('/')->with('success', 'Signed up!');
+    }
+
+    // =================================================================
+
+    public function login (Request $request) {
+        // get form data 
+        $data = $request->validate([
+            'email_login' => 'required|email',
+            'password_login' => 'required|min:4|max:32',
+        ]);
+
+        $data['email'] = $data['email_login'];
+        $data['password'] = $data['password_login'];
+        unset($data['email_login']);
+        unset($data['password_login']);
+
+        // if successful
+        if (Auth::attempt($data)) {
+            $request->session()->regenerate(); // prevent session fixation
+            return redirect('/')->with('success', 'Logged in!');
+        }
+
+        // if failed
+        return back()->withErrors([
+            'email_login' => 'The provided credentials do not match our records.',
+        ]);
+    }
+
+    // =================================================================
+
+    public function logout () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/auth')->with('success', 'Logged out!');
     }
 
     // =================================================================

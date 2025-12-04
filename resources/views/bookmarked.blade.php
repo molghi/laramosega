@@ -3,7 +3,10 @@
 @section('title', 'Bookmarked Titles')
 
 @section('content')
-    <h2 class="mt-12 text-center {{ config('tailwind.page_title') }} mb-8">Bookmarked Titles</h2>
+    <h2 class="mt-12 text-center {{ config('tailwind.page_title') }} mb-8">
+        Bookmarked Titles
+        {{ !empty($bookmarked_titles) ? "(" . count($bookmarked_titles) . ")" : '' }}
+    </h2>
 
     @if (!empty($bookmarked_titles) && count($bookmarked_titles))
         <div class="{{ config('tailwind.container') }} mt-12">
@@ -17,6 +20,6 @@
             </div>
         </div>
     @else 
-        <div class="text-center my-10">You haven't bookmarked anything yet.</div>
+        <div class="text-center my-10 italic">You haven't bookmarked anything yet.</div>
     @endif
 @endsection

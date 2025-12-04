@@ -13,20 +13,24 @@
                     {{ $link_key }}
                 </a>
             @endforeach --}}
-            @foreach ($navlinks as $link_key => $link_value)
-                @php
-                    $current_path = trim(request()->path(), '/');    // slash sliced out
-                    $link_path = trim($link_value, '/');             // slash sliced out
-                    $active = $link_path === ''
-                        ? ($current_path === '')
-                        : ($current_path === $link_path || str_starts_with($current_path, $link_path.'/'));
-                @endphp
+            @auth
+                @foreach ($navlinks as $link_key => $link_value)
+                    @php
+                        $current_path = trim(request()->path(), '/');    // slash sliced out
+                        $link_path = trim($link_value, '/');             // slash sliced out
+                        $active = $link_path === ''
+                            ? ($current_path === '')
+                            : ($current_path === $link_path || str_starts_with($current_path, $link_path.'/'));
+                    @endphp
 
-                <a href="{{ $link_value }}"
-                class="{{ $active ? 'font-bold text-yellow-500' : '' }} hover:underline">
-                    {{ $link_key }}
-                </a>
-            @endforeach
+                    <a href="{{ $link_value }}"
+                    class="{{ $active ? 'font-bold text-yellow-500' : '' }} {{$link_key === 'Logout' ? 'opacity-30 hover:opacity-100' : ''}} hover:underline">
+                        {{ $link_key }}
+                    </a>
+                @endforeach
+            @else
+                <a href="/auth" class="hover:underline {{request()->path()==='auth' ? 'font-bold underline text-[var(--accent)]' : ''}}">Sign Up / Log In</a>
+            @endauth
         </nav>
     </div>
 </header>

@@ -4,13 +4,15 @@
         <div class="text-lg font-bold"> {{ $sitename }} </div>
 
         <!-- Footer Nav Links -->
-        <nav class="space-x-4">
-            @foreach ($navlinks as $link_key => $link_value)
-                <a href="{{ $link_value }}" 
-                    class="{{ request()->path() === $link_value ? 'font-bold underline' : '' }} hover:underline">
-                    {{ $link_key }}</a>
-            @endforeach
-        </nav>
+        @auth
+            <nav class="space-x-4">
+                @foreach ($navlinks as $link_key => $link_value)
+                    <a href="{{ $link_value }}" 
+                        class="{{ request()->path() === $link_value ? 'font-bold underline' : '' }} hover:underline">
+                        {{ $link_key }}</a>
+                @endforeach
+            </nav>
+        @endauth
         
         {{-- Footer Copyright --}}
         <div class="text-center text-sm text-gray-500">
