@@ -56,9 +56,13 @@
                 {{ implode(', ', array_slice(explode(', ', $resultData['place_of_birth']), -2, 2)) }}
             </span>
             @if ($resultData['deathday'])
-                <span class="opacity-50 hover:opacity-100 transition duration-300">({{ (int) explode('-', $resultData['deathday'])[0] - (int) explode('-', $resultData['birthday'])[0] }} y/o)</span>
-            @else
-                <span class="opacity-50 hover:opacity-100 transition duration-300">({{ (int) date('Y') - (int) explode('-', $resultData['birthday'])[0] }} y/o)</span>
+                <span class="opacity-50 hover:opacity-100 transition duration-300">
+                    ({{ (int) explode('-', $resultData['deathday'])[0] - (int) explode('-', $resultData['birthday'])[0] }} y/o)
+                </span>
+            @elseif ($resultData['birthday'])
+                <span class="opacity-50 hover:opacity-100 transition duration-300">
+                    ({{ (int) date('Y') - (int) explode('-', $resultData['birthday'])[0] }} y/o)
+                </span>
             @endif
         </a>
     @endif

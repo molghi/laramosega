@@ -48,11 +48,13 @@ if ($is_director) {
             <div class="flex justify-between items-center gap-6">
                 <p><strong class="font-bold opacity-50">
                     Born On:</strong> {{ $bio['birthday'] }}
-                    @if (!$bio['deathday'])
-                        <span class="text-sm italic opacity-50 transition duration-300 hover:opacity-100">({{ (int) date('Y') - explode('-', $bio['birthday'])[0] }} years old)</span>
+                    @if (empty($bio['deathday']) && !empty($bio['birthday']))
+                        <span class="text-sm italic opacity-50 transition duration-300 hover:opacity-100">
+                            ({{ (int) date('Y') - (int) explode('-', $bio['birthday'])[0] }} years old)
+                        </span>
                     @endif
                 </p>
-                @if ($bio['deathday'])
+                @if (!empty($bio['deathday']))
                     <div class="flex gap-4">
                         <p><strong class="font-bold opacity-50">Died On:</strong> {{ $bio['deathday'] }}</p>
                         <span class="text-sm italic opacity-50 transition duration-300 hover:opacity-100">({{ explode('-', $bio['deathday'])[0] - explode('-', $bio['birthday'])[0] }} years old)</span>
